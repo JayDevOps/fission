@@ -115,10 +115,10 @@ func (executor *Executor) invalidateCacheEntryForFunction(w http.ResponseWriter,
 
 	respChan := make(chan *CacheInvalidationResponse)
 	executor.invalidateCacheRequestChan <- &invalidateCacheChanRequest{
-		request: invalidateCacheRequest,
+		request:  invalidateCacheRequest,
 		response: respChan,
 	}
-	response := <- respChan
+	response := <-respChan
 	if response.err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {

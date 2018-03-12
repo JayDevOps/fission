@@ -42,8 +42,8 @@ type (
 		fissionClient *crd.FissionClient
 		fsCache       *fscache.FunctionServiceCache
 
-		requestChan chan *createFuncServiceRequest
-		fsCreateWg  map[string]*sync.WaitGroup
+		requestChan                chan *createFuncServiceRequest
+		fsCreateWg                 map[string]*sync.WaitGroup
 		invalidateCacheRequestChan chan *invalidateCacheChanRequest
 	}
 	createFuncServiceRequest struct {
@@ -57,7 +57,7 @@ type (
 	}
 
 	invalidateCacheChanRequest struct {
-		request fission.CacheInvalidationRequest
+		request  fission.CacheInvalidationRequest
 		response chan *CacheInvalidationResponse
 	}
 
@@ -74,8 +74,8 @@ func MakeExecutor(gpm *poolmgr.GenericPoolManager, ndm *newdeploy.NewDeploy, fis
 		fissionClient: fissionClient,
 		fsCache:       fsCache,
 
-		requestChan: make(chan *createFuncServiceRequest),
-		fsCreateWg:  make(map[string]*sync.WaitGroup),
+		requestChan:                make(chan *createFuncServiceRequest),
+		fsCreateWg:                 make(map[string]*sync.WaitGroup),
 		invalidateCacheRequestChan: make(chan *invalidateCacheChanRequest),
 	}
 	go executor.serveCreateFuncServices()
@@ -210,9 +210,9 @@ func (executor *Executor) serveInvalidateCacheEntryRequests() {
 
 		executorType, err := executor.getFunctionExecutorType(funcMeta)
 		if err != nil {
-			chanReq.response <- &CacheInvalidationResponse {
-					err: err,
-				}
+			chanReq.response <- &CacheInvalidationResponse{
+				err: err,
+			}
 		}
 
 		switch executorType {
@@ -224,7 +224,7 @@ func (executor *Executor) serveInvalidateCacheEntryRequests() {
 			fsvc, err := executor.fsCache.GetByFunction(funcMeta)
 			if err != nil {
 				log.Printf("Error getting function %s object", funcMeta.Name)
-				chanReq.response <- &CacheInvalidationResponse {
+				chanReq.response <- &CacheInvalidationResponse{
 					err: err,
 				}
 			}
@@ -232,7 +232,7 @@ func (executor *Executor) serveInvalidateCacheEntryRequests() {
 			if chanReq.request.FunctionPodAddress == fsvc.Address {
 				log.Printf("Deleting cache entry for function : %s, address : %s", fsvc.Name, fsvc.Address)
 				executor.fsCache.DeleteEntry(fsvc)
-				chanReq.response <- &CacheInvalidationResponse {
+				chanReq.response <- &CacheInvalidationResponse{
 					err: nil,
 				}
 			}
